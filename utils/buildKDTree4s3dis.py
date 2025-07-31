@@ -121,31 +121,28 @@ def read_ply(filename, triangular_mesh=False):
 
     return data
 def buildKDTreeForSp(components,all_xyz):
-    # 计算每个超点的中心点
+    # Compute the center point of each superpoint.
     points = all_xyz
     sp_centers = []
     for superpoint in components:
-        superpoint_coords = points[superpoint]  # 获取 superpoint 中所有点的坐标
-        center = np.mean(superpoint_coords, axis=0)  # 计算 superpoint 的中心点坐标
+        superpoint_coords = points[superpoint]  # Obtain the coordinates of all points in the superpoint.
+        center = np.mean(superpoint_coords, axis=0)  # Compute the coordinates of the center point of the superpoint.
         sp_centers.append(center)
-    # print(sp_centers)
-    # 基于中心点构建KD树
+  
+    # Construct the KD-tree based on the center points.
     sp_centers = np.array(sp_centers)
     tree = KDTree(sp_centers,leaf_size=20)
-    # 对每个超点查询最近的个邻居的索引
-    num_neighbors = 20  # 邻居数量
+    # Query the indices of the k nearest neighbors for each superpoint.
+    num_neighbors = 20  # number of neighbors
     neighbors_indices = tree.query(sp_centers, k=num_neighbors + 1, return_distance=False)[:, 1:]
     return tree, neighbors_indices
-    # 打印每个超点的邻居索引
-    # for i, indices in enumerate(neighbors_indices):
-    #     print(f"超点 {i} 的最近 {num_neighbors} 个邻居的索引是: {indices}")
+    
 def process_superpoint_files(directory):
     """
     Process each .superpoint file in the specified directory.
     
     :param directory: Path to the directory containing .superpoint files
     """
-    # sp_directory = os.listdir(os.path.join(directory, '0.012', 'superpoint'))
     sp_directory = directory+'/0.008/superpoint'
     for filename in os.listdir(sp_directory):
         if filename.endswith(".superpoint"):
@@ -170,5 +167,5 @@ def process_superpoint_files(directory):
                 pickle.dump(sp_neighbors_indices, f)
 
 if __name__ == "__main__":
-    directory = "/data3/ncl/S3DIS"
+    directory = "./dataset/S3DIS"
     process_superpoint_files(directory)
