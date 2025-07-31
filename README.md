@@ -68,7 +68,7 @@ python utils/buildKDTree4semantic3d.py
 
 - ## S3DIS 
 ```
-python ssdr_main_S3DIS2.py
+python ssdr_main_s3dis.py
 ```
 
 - ## Semantic3D
