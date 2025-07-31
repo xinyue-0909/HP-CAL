@@ -11,7 +11,7 @@ sys.path.append(ROOT_DIR)
 from helper_ply import write_ply
 from helper_tool import DataProcessing as DP
 
-dataset_path = '/mnt/home/dxy/dataset/S3DIS/Stanford3dDataset_v1.2_Aligned_Version'
+dataset_path = './dataset/S3DIS/Stanford3dDataset_v1.2_Aligned_Version'
 anno_paths = [line.rstrip() for line in open(join(BASE_DIR, 'meta/anno_paths.txt'))]
 anno_paths = [join(dataset_path, p) for p in anno_paths]
 
@@ -55,8 +55,8 @@ def convert_pc2ply(anno_path, save_path):
     write_ply(save_path, (xyz, colors, labels), ['x', 'y', 'z', 'red', 'green', 'blue', 'class'])
 
     # save sub_cloud and KDTree file
-    sub_xyz, sub_colors, sub_labels = DP.grid_sub_sampling(xyz, colors, labels, sub_grid_size)  # 与 superpoint一样，求bin
-    sub_colors = sub_colors / 255.0  # 0~1归一化
+    sub_xyz, sub_colors, sub_labels = DP.grid_sub_sampling(xyz, colors, labels, sub_grid_size)  
+    sub_colors = sub_colors / 255.0  # Normalization to the range [0, 1]
     sub_ply_file = join(sub_pc_folder, save_path.split('/')[-1][:-4] + '.ply')
     write_ply(sub_ply_file, [sub_xyz, sub_colors, sub_labels], ['x', 'y', 'z', 'red', 'green', 'blue', 'class'])
 
