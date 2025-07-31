@@ -64,3 +64,12 @@ python partition/compute_superpoint_semantic3d.py
 ```
 python utils/buildKDTree4semantic3d.py
   
+## Run
+- ## S3DIS 
+```
+python ssdr_main_S3DIS2.py
+```
+- ## Semantic3D
+```
+python ssdr_main_semantic3d.py
+```
