@@ -3,8 +3,8 @@ import math
 import time
 
 from RandLANet import Network, log_out
-from sampler2 import *
-# from sampler import *
+
+from sampler import *
 import tensorflow.compat.v1 as tf
 import os
 
@@ -15,13 +15,9 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', type=str, default='None', help='pretrained model path')
     parser.add_argument('--sampler', type=str, default='T', choices=["random", "T"], help='sampler')
     parser.add_argument('--dataset', type=str, default='Semantic3D', choices=["S3DIS", "semantic3d", "SemanticKITTI"])
-    # --round ?
     parser.add_argument('--round', type=int, default=2)
-    # --classbal ?
     parser.add_argument('--classbal', type=int, default=1, choices=[0,1,2])
-    # --distance ?
     parser.add_argument('--distance', type=int, default=0, choices=[0,1])
-    # --edcd ?
     parser.add_argument('--edcd', type=int, default=0, choices=[0,1])
 
     parser.add_argument('--uncertainty_mode', type=str, default="WetSU", choices=["mean", "sum_weight", "WetSU"], help='the mode from pixel uncertainty to region uncertainty')
@@ -30,20 +26,16 @@ if __name__ == '__main__':
 
     parser.add_argument('--oracle_mode', type=str, default="NAIL", choices=["dominant", "part_do", "NAIL", "domi_prec4", "domi_prec3"],
                         help='the mode from pixel uncertainty to region uncertainty. domi_prec4 denotes it begins using NAIL labeling when round 4 ')
-    # --reg_strangth ?
     parser.add_argument('--reg_strength', default=0.012, type=float,
-                        help='regularization strength for the minimal partition')    #原本是0.008
+                        help='regularization strength for the minimal partition')    
     parser.add_argument('--threshold', default=0.9, type=float,
                         help='tolerance threshold')
     parser.add_argument('--min_size', default=5, type=int,                           
-                        help='the number of points in one selected superpoint >= min_size')  #原本是1
-    # --t ?
+                        help='the number of points in one selected superpoint >= min_size')  
     parser.add_argument('--t', default=4, type=int,
-                        help='t, multiple run')                                     #  原本是0
-    # --gcn ?
+                        help='t, multiple run')                                   
     parser.add_argument('--gcn', default=0, type=int,
                         help='0: dont use gcn; 1: use gcn')
-    # --gcn_fps ?
     parser.add_argument('--gcn_fps', default=0, type=int,
                         help='0: dont use gcn_fps; 1: use gcn_fps')
 
@@ -52,7 +44,7 @@ if __name__ == '__main__':
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
     # os.environ['CUDA_VISIBLE_DEVICES'] = str(FLAGS.gpu)
     os.environ['CUDA_VISIBLE_DEVICES'] = "1"
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # '2'
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  
     sampler_name = FLAGS.sampler
     dataset_name = FLAGS.dataset
     test_area = FLAGS.test_area
@@ -78,7 +70,7 @@ if __name__ == '__main__':
             test_area = 0
             cfg = ConfigSemantic3D
 
-        with open(os.path.join("/data3/ncl/", dataset_name, str(reg_strength), "superpoint/total.pkl"), "rb") as f:
+        with open(os.path.join("./dataset", dataset_name, str(reg_strength), "superpoint/total.pkl"), "rb") as f:
             total_obj = pickle.load(f)
         total_sp_num = total_obj["sp_num"]
 
@@ -87,30 +79,25 @@ if __name__ == '__main__':
         sampler_args = []
 
         if sampler_name == "random":
-            sampler_args.append(t) # 4
-            sampler_args.append(sampler_name) # random
-            sampler_args.append(oracle_mode) # dominant
-            sampler_args.append(str(threshold)) # 0.9
-            sampler_args.append(str(min_size)) # 5
+            sampler_args.append(t) 
+            sampler_args.append(sampler_name) 
+            sampler_args.append(oracle_mode)
+            sampler_args.append(str(threshold)) 
+            sampler_args.append(str(min_size)) 
 
-            Sampler = RandomSampler(input_path="/data3/ncl/" + dataset_name + "/" + input_, data_path="/data3/ncl/" + dataset_name+ "/" + str(reg_strength),
+            Sampler = RandomSampler(input_path="./dataset" + dataset_name + "/" + input_, data_path="./dataset" + dataset_name+ "/" + str(reg_strength),
                                     total_num=total_sp_num, sampler_args=sampler_args, min_size=min_size)
 
         elif sampler_name == "T":
             sampler_args.append(t)
             sampler_args.append(point_uncertainty_mode)
-            sampler_args.append("change_sim2")#标志位，用于区别不同的实验
-            sampler_args.append("25")
-            # sampler_args.append("fine_tune")
-            #1.fix_new
-            #2.divide
-            #3.change_sim
+         
             if classbal == 1:
                 sampler_args.append("classbal")
             elif classbal == 2:
                 sampler_args.append("clsbal")
-            # if distance == 1:
-            #     sampler_args.append("distance")
+            if distance == 1:
+                sampler_args.append("distance")
             if edcd == 1:
                 sampler_args.append("edcd")
             if gcn:
@@ -123,14 +110,12 @@ if __name__ == '__main__':
             sampler_args.append(str(threshold))
             sampler_args.append(str(min_size))
 
-            Sampler = TSampler(input_path="/data3/ncl/" + dataset_name + "/" + input_, data_path="/data3/ncl/" + dataset_name+ "/" + str(reg_strength), total_num=total_sp_num,
+            Sampler = TSampler(input_path="./dataset" + dataset_name + "/" + input_, data_path="./dataset" + dataset_name+ "/" + str(reg_strength), total_num=total_sp_num,
                                test_area_idx=test_area, sampler_args=sampler_args, reg_strength=reg_strength, min_size=min_size, dataset_name=dataset_name)
 
-        # round_result_file = open(os.path.join("record_round", dataset_name + "_" + str(test_area) + "_" + get_sampler_args_str(sampler_args) + "_" + str(reg_strength) +'_final_result_sp_3000' + '.txt'), 'a')
         round_result_file = open(os.path.join("record_round", dataset_name + "_" + str(test_area) + "_" + get_sampler_args_str(sampler_args) + "_" + str(reg_strength) +'_Divide_first_then_merge' + '.txt'), 'a')
 
-        # sp_batch_size = int(math.ceil(total_sp_num * 3.0 / 100))
-        #每轮主动学习周期标注3000个超点
+
         sp_batch_size = 3000
 
         model = Network(cfg, dataset_name, sampler_args, test_area, reg_strength=reg_strength)
