@@ -2,7 +2,6 @@
 import os.path
 import argparse
 from graphs import compute_graph_nn_2
-# from provider import *
 from helper_ply import read_ply
 import glob
 import pickle
@@ -16,9 +15,6 @@ sys.path.append("./partition/ply_c")
 sys.path.append("./partition")
 import libcp
 import libply_c
-
-# import pydevd_pycharm
-# pydevd_pycharm.settrace('10.214.160.245', port=11111, stdoutToServer=True, stderrToServer=True)
 
 train_cloud_name_list = ['bildstein_station1_xyz_intensity_rgb',
                              'bildstein_station5_xyz_intensity_rgb',
@@ -43,7 +39,7 @@ test_cloud_name_list = ['MarketplaceFeldkirch_Station4_rgb_intensity-reduced',
                         'StGallenCathedral_station6_rgb_intensity-reduced']
 
 def semantic3d_superpoint(args):
-    path = "/mnt/home/dxy/dataset/semantic3d"
+    path = "./dataset/semantic3d"
 
     output_dir = os.path.join(path, str(args.reg_strength), "superpoint")
 
@@ -110,7 +106,7 @@ def semantic3d_superpoint(args):
 
 
 def test_superpoint_distribution(args):
-    all_files = glob.glob(os.path.join('/mnt/home/dxy/dataset/semantic3d', str(args.reg_strength), 'superpoint', '*.superpoint'))
+    all_files = glob.glob(os.path.join('./dataset/semantic3d', str(args.reg_strength), 'superpoint', '*.superpoint'))
     sp_count = 0
     point_count = 0
 
