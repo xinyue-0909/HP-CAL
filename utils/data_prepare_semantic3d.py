@@ -42,7 +42,7 @@ if True:
         # .ply
         full_ply_path = join(original_pc_folder, cloud_name + '.ply')
 
-        #  Subsample to save space
+        # Subsample to save space
         points, colors, labels = DP.grid_sub_sampling(pc[:, :3].astype(np.float32),
                                                                   pc[:, 4:7].astype(np.uint8), labels, 0.01)
         print(cloud_name, len(points), len(labels))
