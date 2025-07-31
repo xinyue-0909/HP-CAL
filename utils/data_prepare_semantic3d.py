@@ -12,14 +12,13 @@ from helper_ply import write_ply
 from helper_tool import DataProcessing as DP
 
 grid_size = 0.06
-dataset_path = '/mnt/home/dxy/dataset/semantic3d/original_data'
-# dataset_path = '/home/ncl/dataset/SensatUrbanBackup/original_block_ply'
-# 这里original_ply和input_0.06位于original_data的子目录   有误
+dataset_path = './dataset/semantic3d/original_data'
+
 original_pc_folder = join(dataset_path, 'original_ply')
 sub_pc_folder = join(dataset_path, 'input_{:.3f}'.format(grid_size))
 os.mkdir(original_pc_folder) if not exists(original_pc_folder) else None
 os.mkdir(sub_pc_folder) if not exists(sub_pc_folder) else None
-# Semantic3D的15个训练集 只处理了15个训练集，其中2个作为验证集，测试集数据未处理
+
 cloud_name_list = ['bildstein_station1_xyz_intensity_rgb',
                    'bildstein_station5_xyz_intensity_rgb',
                    'domfountain_station1_xyz_intensity_rgb',
@@ -61,7 +60,7 @@ if True:
         u_labels = np.unique(labels)
         print(u_labels)
         print(len(labels))
-        # 写入剔除标记为0即为无效点之后的数据到full_ply_path
+        # Write the data, after removing points marked as 0 (invalid points), to the full_ply_path.
         write_ply(full_ply_path, (points, colors, labels), ['x', 'y', 'z', 'red', 'green', 'blue', 'class'])
 
         # save sub_cloud and KDTree file
