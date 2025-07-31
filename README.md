@@ -31,7 +31,8 @@ make
 ```
 
 ## Dataset
-- S3DIS 
+- ## S3DIS 
+
 Download the files named "Stanford3dDataset_v1.2_Aligned_Version.zip". Uncompress the folder and move it to /dataset/S3DIS.
 1. preparing the dataset.
 ```
@@ -45,7 +46,9 @@ python partition/compute_superpoint_s3dis.py
 ```
 python utils/buildKDTree4s3dis.py
 ```
-- Semantic3DDownload and extract the dataset. First, please specify the path of the dataset by changing the BASE_DIR in "download_semantic3d.sh"
+- ## Semantic3D
+
+Download and extract the dataset. First, please specify the path of the dataset by changing the BASE_DIR in "download_semantic3d.sh"
  ```
 sh utils/download_semantic3d.sh
 ```
